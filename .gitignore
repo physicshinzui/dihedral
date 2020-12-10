@@ -1,0 +1,4 @@
+*.csv
+sample*/
+.DS_Store
+.ipynb_checkpoints/
