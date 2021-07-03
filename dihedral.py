@@ -10,11 +10,12 @@ import sys
 # - See https://docs.mdanalysis.org/1.0.0/documentation_pages/analysis/dihedrals.html#MDAnalysis.analysis.dihedrals.Dihedral.angles
 
 def chi2_selection(u):
-    #Args
-    #  u: MDAnalysis.Universe
-    #Return:
-    #  atomgroups: AtomGroups in MDAnalysis
-
+    """
+    Args
+      u: MDAnalysis.Universe
+    Return:
+      atomgroups: AtomGroups in MDAnalysis
+    """
     res_letters  = ['PHE','TYR','TRP','HIS','MET','LEU','ILE','ARG','GLU','GLN','LYS']    
     chi2_atoms   = {'PHE':['CA', 'CB', 'CG' , 'CD1'],
                     'TYR':['CA', 'CB', 'CG' , 'CD1'],
@@ -53,6 +54,40 @@ def chi2_selection(u):
     
     return atomgroups 
 
+def rotCH3(u):
+    """
+    Args
+      u: MDAnalysis.Universe
+    Return:
+      atomgroups: AtomGroups in MDAnalysis
+    
+    Note: This function is for dihedral angle of N-Ca-Cb-HB1 of Ala.  
+    """
+    res_letters  = ['ALA']    
+    chi2_atoms   = {'ALA':['N', 'CA', 'CB' , 'HB1']}
+
+    #Get residue ids and 3-letter
+    res_sni = [] # stands for RESidue Segment, Name, and Index
+    for residue in u.residues:
+        resn = residue.resname
+        if resn in res_letters:
+            res_sni.append([resn, residue.resid, residue.segid])
+    
+    #Make a list of atomgroups
+    atomgroups = []
+    for resn, resid, chainid in res_sni:
+        atom_names = ' '.join(chi2_atoms[resn])
+        atomgroups.append(u.select_atoms(f'segid {chainid} and resid {resid} and name {atom_names}'))
+
+    n_atoms_in_each = set(map(len, atomgroups))
+    for a in atomgroups:
+        if len(a) != 4: 
+            print(f'Stop) All Atom groups must have four atoms, but the No. of atoms stored are:')
+            print(a.resnames, a.names)
+            exit()
+    
+    return atomgroups     
+
 def parser():
     import argparse
     p = argparse.ArgumentParser()
@@ -86,6 +121,9 @@ def main():
     elif at=='X1':
         atomgroups = [res.chi1_selection() for res in u.residues]
         atomgroups = [ele for ele in atomgroups if ele] # this is for eliminating None element from atomgroups. "if ele" works only if ele is not empty (None).
+
+    elif at=='CH3':
+        atomgroups = rotCH3(u)
 
     columns = make_columns(atomgroups) #for table's column
 
