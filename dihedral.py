@@ -63,8 +63,14 @@ def rotCH3(u):
     
     Note: This function is for dihedral angle of N-Ca-Cb-HB1 of Ala.  
     """
-    res_letters  = ['ALA']    
-    chi2_atoms   = {'ALA':['N', 'CA', 'CB' , 'HB1']}
+    res_letters  = ['ALA', 'MET', 'LEU', 'ILE', 'THR', 'VAL']    
+    chi2_atoms   = {'ALA':['N', 'CA', 'CB' , 'HB1'],
+                    'MET':['CG','SD','CE','HE1'],
+                    'LEU':['CB','CG','CD1','HD11'], #or ['CB','CG','CD2','HD21']
+                    'ILE':['CB','CG1','CD','HD1'],  #or ['CA','CB','CG2','HG21']
+                    'THR':['CA','CB','CG2','HG21'],
+                    'VAL':['CA','CB','CG1','HG11']  #or ['CA','CB','CG2','HG21']
+                    }
 
     #Get residue ids and 3-letter
     res_sni = [] # stands for RESidue Segment, Name, and Index
